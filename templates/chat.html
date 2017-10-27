@@ -1,0 +1,63 @@
+<DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for("static", filename="my.css") }}">
+        <title>MyPyChat</title>
+  </head>
+  <body>
+    <div class="container">
+  <div class="jumbotron">
+        <h2>Добро пожаловать в чат!</h2>
+        <div class="message_holder" style="max-height: 300px; overflow: auto;"></div>
+  </div>
+  <div class="row marketing">
+      <div class="col-lg-12">
+        <form action="" method="POST">
+          <input type="text" class="username form-control" placeholder="Имя">
+          <br>
+          <input type="text" class="message form-control" placeholder="Сообщение">
+          <br>
+          <button type="submit" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-send"></span> Отправить</button>
+        </form>
+      </div>
+
+  </div>
+  <footer class="footer">
+    <p>&copy; 2017 <a href="http://enotcode.com">enotcode</a></p>
+  </footer>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+<script>
+  var socket = io.connect( 'http://' + document.domain + ':' + location.port )
+  socket.on('connect', function(){
+    socket.emit('my event',{
+      data: 'User Connected'
+    })
+    var form = $('form').on('submit', function(e){
+      e.preventDefault()
+      let user_name = $('input.username').val()
+      let user_msg = $('input.message').val()
+      socket.emit('my event',{
+        user_name : user_name,
+        message : user_msg
+      })
+      $('input.message').val('').focus()
+    })
+  })
+  socket.on('my response', function(msg){
+    console.log(msg)
+    if(typeof msg.user_name !== 'undefined' && msg.user_name !== '' && msg.message !== ''){
+      $('h2').remove()
+      $('div.message_holder').append('<div class="msg_bbl"><b style="color: #000">' + msg.user_name + ': </b> ' + msg.message + '</div>')
+    }
+  })
+</script>
+  </body>
+</html>
